@@ -118,7 +118,7 @@ const { sign } = require('wxcrypt'); // CommonJS
 #### 使用
 
 ```ts
-sign(...args: string[]);
+sign(...args: string[]): string;
 ```
 
 ### 对象转XML字符串`o2x`

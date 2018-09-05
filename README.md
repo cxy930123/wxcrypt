@@ -95,3 +95,149 @@ encryptMsg(replyMsg, timestamp, nonce)
 > 
 > 1. 微信公众平台技术文档[《消息加解密接入指引》](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318479&token=&lang=zh_CN)
 > 2. 企业微信开发文档[《加解密方案说明》](https://work.weixin.qq.com/api/doc#12976)
+
+## 辅助函数
+
+除了对WXBizMsgCrypt的实现，本项目还提供几个辅助函数。
+
+### 签名函数`sign`
+
+传入若干个字符串，用于生成签名。可用于公众号url签名校验。具体算法为：
+
+```js
+sha1(sort(str1、str2、...))
+```
+
+#### 引入
+
+```js
+import { sign } from 'wxcrypt'; // ES6
+const { sign } = require('wxcrypt'); // CommonJS
+```
+
+#### 使用
+
+```ts
+sign(...args: string[]);
+```
+
+### 对象转XML字符串`o2x`
+
+传入任意对象，生成xml字符串。
+
+> __注意：__
+>
+> 1. 对象最外层应该只有一个key，但这不是强制性的
+> 2. 不支持嵌套数组
+
+#### 引入
+
+```js
+import { o2x } from 'wxcrypt'; // ES6
+const { o2x } = require('wxcrypt'); // CommonJS
+```
+
+#### 使用
+
+```ts
+o2x(obj: any): string
+```
+
+#### 示例
+
+```js
+o2x({
+  xml: {
+    timestamp: 1536123965810,
+    articles: {
+      item: [
+        {
+          title: 'Article1',
+          desc: 'Description1'
+        },
+        {
+          title: 'Article2',
+          desc: 'Description2'
+        }
+      ]
+    }
+  }
+})
+```
+
+将返回如下字符串（格式化之后）：
+
+```xml
+<xml>
+  <timestamp>1536123965810</timestamp>
+  <articles>
+    <item>
+      <title>Article1</title>
+      <desc>Description1</desc>
+    </item>
+    <item>
+      <title>Article2</title>
+      <desc>Description2</desc>
+    </item>
+  </articles>
+</xml>
+```
+
+### XML字符串转对象`x2o`
+
+传入xml字符串，生成js对象
+
+> __注意：__
+>
+> 1. 虽然xml最外层应该只有一个根节点，但这不是强制的
+> 2. 如果有两个以上兄弟节点的标签名相同，则会被合并成一个数组
+
+#### 引入
+
+```js
+import { x2o } from 'wxcrypt'; // ES6
+const { x2o } = require('wxcrypt'); // CommonJS
+```
+
+#### 使用
+
+```ts
+x2o(xml: string): any
+```
+
+#### 示例
+
+```js
+x2o(`<xml>
+  <timestamp>1536123965810</timestamp>
+  <articles>
+    <item>
+      <title>Article1</title>
+      <desc>Description1</desc>
+    </item>
+    <item>
+      <title>Article2</title>
+      <desc>Description2</desc>
+    </item>
+  </articles>
+</xml>`)
+```
+
+将返回如下对象：
+
+```js
+{
+  xml: {
+    timestamp: '1536123965810',
+    articles: {
+      item: [{
+        title: 'Article1',
+        desc: 'Description1'
+      }, {
+        title: 'Article2',
+        desc: 'Description2'
+      }]
+    }
+  }
+}
+```

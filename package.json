@@ -1,0 +1,41 @@
+{
+  "name": "wxcrypt",
+  "version": "1.0.0",
+  "description": "WXBizMsgCrypt for NodeJS",
+  "files": [
+    "**/*.d.ts",
+    "**/*.js"
+  ],
+  "scripts": {
+    "start": "tsc",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cxy930123/wxcrypt.git"
+  },
+  "keywords": [
+    "wechat",
+    "crypt",
+    "crypto",
+    "wxbizmsgcrypt"
+  ],
+  "author": {
+    "name": "cxy930123",
+    "email": "mail@xingyu1993.cn"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cxy930123/wxcrypt/issues"
+  },
+  "homepage": "https://github.com/cxy930123/wxcrypt#readme",
+  "dependencies": {
+    "@types/node": "^10.9.4"
+  },
+  "devDependencies": {
+    "mocha": "^5.2.0",
+    "randomstring": "^1.1.5",
+    "should": "^13.2.3",
+    "typescript": "^3.0.1"
+  }
+}

@@ -3,7 +3,6 @@ import { createDecipheriv, pseudoRandomBytes, createCipheriv } from 'crypto';
 
 const ERROR_SIGNATURE_DISMATCH = new Error('Signature dismatch.');
 const ERROR_APPID_OR_CROPID_DISMATCH = new Error('AppID or CropID dismatch.');
-const ERROR_TIMESTAMP_DISMATCH = new Error('The time difference between the server and the client cannot exceed 5 minutes.')
 
 class WXBizMsgCrypt {
   static readonly default = WXBizMsgCrypt;
@@ -42,11 +41,6 @@ class WXBizMsgCrypt {
     nonce: string,
     msgEncrypt: string
   ) {
-    // 校验时间戳
-    if (Math.abs(+timestamp - Date.now()) > 300000) {
-      throw ERROR_TIMESTAMP_DISMATCH;
-    }
-
     // 校验消息体签名
     if (msgSignature !== sign(this.token, timestamp, nonce, msgEncrypt)) {
       throw ERROR_SIGNATURE_DISMATCH;

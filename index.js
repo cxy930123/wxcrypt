@@ -3,7 +3,6 @@ var util_1 = require("./util");
 var crypto_1 = require("crypto");
 var ERROR_SIGNATURE_DISMATCH = new Error('Signature dismatch.');
 var ERROR_APPID_OR_CROPID_DISMATCH = new Error('AppID or CropID dismatch.');
-var ERROR_TIMESTAMP_DISMATCH = new Error('The time difference between the server and the client cannot exceed 5 minutes.');
 var WXBizMsgCrypt = /** @class */ (function () {
     /**
      * 构造函数
@@ -25,10 +24,6 @@ var WXBizMsgCrypt = /** @class */ (function () {
      * @param msgEncrypt 消息体（Base64编码的密文）
      */
     WXBizMsgCrypt.prototype.decrypt = function (msgSignature, timestamp, nonce, msgEncrypt) {
-        // 校验时间戳
-        if (Math.abs(+timestamp - Date.now()) > 300000) {
-            throw ERROR_TIMESTAMP_DISMATCH;
-        }
         // 校验消息体签名
         if (msgSignature !== util_1.sign(this.token, timestamp, nonce, msgEncrypt)) {
             throw ERROR_SIGNATURE_DISMATCH;
@@ -128,7 +123,6 @@ var WXBizMsgCrypt = /** @class */ (function () {
             }
         });
     };
-    WXBizMsgCrypt["default"] = WXBizMsgCrypt;
     WXBizMsgCrypt.sign = util_1.sign;
     WXBizMsgCrypt.x2o = util_1.x2o;
     WXBizMsgCrypt.o2x = util_1.o2x;

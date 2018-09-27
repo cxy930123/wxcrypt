@@ -2,7 +2,6 @@ import { x2o, o2x } from './util';
 declare class WXBizMsgCrypt {
     private token;
     private appid;
-    static readonly default: typeof WXBizMsgCrypt;
     static readonly sign: (...args: string[]) => string;
     static readonly x2o: typeof x2o;
     static readonly o2x: typeof o2x;
@@ -50,4 +49,5 @@ declare class WXBizMsgCrypt {
      */
     encryptMsg(replyMsg: string, timestamp: string, nonce: string): string;
 }
+declare namespace WXBizMsgCrypt { }
 export = WXBizMsgCrypt;

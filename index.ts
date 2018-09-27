@@ -5,7 +5,6 @@ const ERROR_SIGNATURE_DISMATCH = new Error('Signature dismatch.');
 const ERROR_APPID_OR_CROPID_DISMATCH = new Error('AppID or CropID dismatch.');
 
 class WXBizMsgCrypt {
-  static readonly default = WXBizMsgCrypt;
   static readonly sign = sign;
   static readonly x2o = x2o;
   static readonly o2x = o2x;
@@ -180,5 +179,7 @@ class WXBizMsgCrypt {
     });
   }
 }
+
+namespace WXBizMsgCrypt { }
 
 export = WXBizMsgCrypt;

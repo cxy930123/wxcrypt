@@ -13,10 +13,16 @@ $ npm install wxcrypt
 ### ES6:
 
 ```js
-import WXBizMsgCrypt from 'wxcrypt';
+import * as WXBizMsgCrypt from 'wxcrypt';
 ```
 
-### CommonJS:
+### Typescript:
+
+```ts
+import WXBizMsgCrypt = require('wxcrypt');
+```
+
+### NodeJS:
 
 ```js
 const WXBizMsgCrypt = require('wxcrypt');

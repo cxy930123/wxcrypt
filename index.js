@@ -1,21 +1,17 @@
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-exports.__esModule = true;
-__export(require("./util"));
 var util_1 = require("./util");
 var crypto_1 = require("crypto");
-var ERROR_SIGNATURE_DISMATCH = new Error('signature dismatch');
-var ERROR_APPID_OR_CROPID_DISMATCH = new Error('AppID or CropID dismatch');
-var default_1 = /** @class */ (function () {
+var ERROR_SIGNATURE_DISMATCH = new Error('Signature dismatch.');
+var ERROR_APPID_OR_CROPID_DISMATCH = new Error('AppID or CropID dismatch.');
+var ERROR_TIMESTAMP_DISMATCH = new Error('The time difference between the server and the client cannot exceed 5 minutes.');
+var WXBizMsgCrypt = /** @class */ (function () {
     /**
      * 构造函数
      * @param token 公众号或企业微信Token
      * @param encodingAESKey 用于消息体的加密
      * @param appid 公众号的AppID或企业微信的CropID
      */
-    function default_1(token, encodingAESKey, appid) {
+    function WXBizMsgCrypt(token, encodingAESKey, appid) {
         this.token = token;
         this.appid = appid;
         this.aesKey = Buffer.from(encodingAESKey, 'base64');
@@ -28,7 +24,11 @@ var default_1 = /** @class */ (function () {
      * @param nonce 用于签名的随机字符串
      * @param msgEncrypt 消息体（Base64编码的密文）
      */
-    default_1.prototype.decrypt = function (msgSignature, timestamp, nonce, msgEncrypt) {
+    WXBizMsgCrypt.prototype.decrypt = function (msgSignature, timestamp, nonce, msgEncrypt) {
+        // 校验时间戳
+        if (Math.abs(+timestamp - Date.now()) > 300000) {
+            throw ERROR_TIMESTAMP_DISMATCH;
+        }
         // 校验消息体签名
         if (msgSignature !== util_1.sign(this.token, timestamp, nonce, msgEncrypt)) {
             throw ERROR_SIGNATURE_DISMATCH;
@@ -66,7 +66,7 @@ var default_1 = /** @class */ (function () {
      * @param echostr 从接收消息的URL中获取的echostr参数。注意，此参数必须是urldecode后的值
      * @return 解密后的明文消息内容，用于回包。注意，必须原样返回，不要做加引号或其它处理
      */
-    default_1.prototype.verifyURL = function (msgSignature, timestamp, nonce, echostr) {
+    WXBizMsgCrypt.prototype.verifyURL = function (msgSignature, timestamp, nonce, echostr) {
         return this.decrypt.apply(this, arguments);
     };
     /**
@@ -77,7 +77,7 @@ var default_1 = /** @class */ (function () {
      * @param postData 从接收消息的URL中获取的整个post数据
      * @return 解密后的msg，以xml组织
      */
-    default_1.prototype.decryptMsg = function (msgSignature, timestamp, nonce, postData) {
+    WXBizMsgCrypt.prototype.decryptMsg = function (msgSignature, timestamp, nonce, postData) {
         return this.decrypt(msgSignature, timestamp, nonce, util_1.x2o(postData).xml.Encrypt);
     };
     /**
@@ -87,7 +87,7 @@ var default_1 = /** @class */ (function () {
      * @param nonce 随机字符串，调用方生成
      * @return 用于返回的密文，以xml组织
      */
-    default_1.prototype.encryptMsg = function (replyMsg, timestamp, nonce) {
+    WXBizMsgCrypt.prototype.encryptMsg = function (replyMsg, timestamp, nonce) {
         // 生成随机字符串[16字节]
         var random16 = crypto_1.pseudoRandomBytes(16);
         // 消息明文
@@ -128,8 +128,10 @@ var default_1 = /** @class */ (function () {
             }
         });
     };
-    default_1.ERROR_SIGNATURE_DISMATCH = ERROR_SIGNATURE_DISMATCH;
-    default_1.ERROR_APPID_OR_CROPID_DISMATCH = ERROR_APPID_OR_CROPID_DISMATCH;
-    return default_1;
+    WXBizMsgCrypt["default"] = WXBizMsgCrypt;
+    WXBizMsgCrypt.sign = util_1.sign;
+    WXBizMsgCrypt.x2o = util_1.x2o;
+    WXBizMsgCrypt.o2x = util_1.o2x;
+    return WXBizMsgCrypt;
 }());
-exports["default"] = default_1;
+module.exports = WXBizMsgCrypt;

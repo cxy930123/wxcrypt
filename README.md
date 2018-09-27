@@ -19,7 +19,7 @@ import WXBizMsgCrypt from 'wxcrypt';
 ### CommonJS:
 
 ```js
-const WXBizMsgCrypt = require('wxcrypt').default;
+const WXBizMsgCrypt = require('wxcrypt');
 ```
 
 ## 使用

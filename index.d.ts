@@ -1,9 +1,11 @@
-export * from './util';
-export default class {
+import { x2o, o2x } from './util';
+declare class WXBizMsgCrypt {
     private token;
     private appid;
-    static readonly ERROR_SIGNATURE_DISMATCH: Error;
-    static readonly ERROR_APPID_OR_CROPID_DISMATCH: Error;
+    static readonly default: typeof WXBizMsgCrypt;
+    static readonly sign: (...args: string[]) => string;
+    static readonly x2o: typeof x2o;
+    static readonly o2x: typeof o2x;
     private aesKey;
     private iv;
     /**
@@ -48,3 +50,4 @@ export default class {
      */
     encryptMsg(replyMsg: string, timestamp: string, nonce: string): string;
 }
+export = WXBizMsgCrypt;

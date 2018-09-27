@@ -1,4 +1,3 @@
-export * from './util';
 import { sign, x2o, o2x } from './util';
 import { createDecipheriv, pseudoRandomBytes, createCipheriv } from 'crypto';
 
@@ -6,10 +5,11 @@ const ERROR_SIGNATURE_DISMATCH = new Error('Signature dismatch.');
 const ERROR_APPID_OR_CROPID_DISMATCH = new Error('AppID or CropID dismatch.');
 const ERROR_TIMESTAMP_DISMATCH = new Error('The time difference between the server and the client cannot exceed 5 minutes.')
 
-export default class {
-  static readonly ERROR_SIGNATURE_DISMATCH = ERROR_SIGNATURE_DISMATCH;
-  static readonly ERROR_APPID_OR_CROPID_DISMATCH = ERROR_APPID_OR_CROPID_DISMATCH;
-  static readonly ERROR_TIMESTAMP_DISMATCH = ERROR_TIMESTAMP_DISMATCH;
+class WXBizMsgCrypt {
+  static readonly default = WXBizMsgCrypt;
+  static readonly sign = sign;
+  static readonly x2o = x2o;
+  static readonly o2x = o2x;
 
   private aesKey: Buffer;
   private iv: Buffer;
@@ -186,3 +186,5 @@ export default class {
     });
   }
 }
+
+export = WXBizMsgCrypt;

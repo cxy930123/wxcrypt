@@ -149,7 +149,9 @@ const { o2x } = require('wxcrypt'); // CommonJS
 o2x(obj: any): string
 ```
 
-#### 示例
+#### 示例1：数组的处理
+
+数组将会展开为兄弟节点，但不允许嵌套的数组
 
 ```js
 o2x({
@@ -189,6 +191,36 @@ o2x({
 </xml>
 ```
 
+#### 示例2：特殊字符的处理
+
+函数自动判断特殊字符的处理方式（使用CDATA或转义），具体如下：
+
+1. 含有特殊字符（`<>&'"`）时，使用CDATA处理
+2. 含有`]]>`时，由于会和CDATA冲突，使用转义处理
+
+```js
+o2x({
+  xml: {
+    // 没有特殊字符，不处理
+    type: 'video',
+    // 引号是特殊字符，使用CDATA处理
+    title: '"愤怒＂的小鸟',
+    // 含有"]]>"，需要转义
+    description: ']]><[['
+  }
+})
+```
+
+将返回如下字符串（格式化之后）：
+
+```xml
+<xml>
+  <type>video</type>
+  <title><![CDATA["愤怒＂的小鸟]]></title>
+  <description>]]&gt;&lt;[[</description>
+</xml>
+```
+
 ### XML字符串转对象`x2o`
 
 传入xml字符串，生成js对象
@@ -197,6 +229,7 @@ o2x({
 >
 > 1. 虽然xml最外层应该只有一个根节点，但这不是强制的
 > 2. 如果有两个以上兄弟节点的标签名相同，则会被合并成一个数组
+> 3. 所有的文本节点都会转化为字符串（而不是数字或布尔类型）
 
 #### 引入
 
@@ -211,7 +244,9 @@ const { x2o } = require('wxcrypt'); // CommonJS
 x2o(xml: string): any
 ```
 
-#### 示例
+#### 示例1：同名兄弟节点的处理
+
+包含同名的兄弟节点时，将转化为数组
 
 ```js
 x2o(`<xml>
@@ -244,6 +279,37 @@ x2o(`<xml>
         desc: 'Description2'
       }]
     }
+  }
+}
+```
+
+#### 示例2：特殊字符的处理
+
+由于微信发来的xml字符串只都是用CDATA处理，而没有用转义处理，当遇到精心构造的消息时（如包含字符串`]]>`的消息），可能导致xml字符串不规范，甚至产生岐义。这种情况下，一般的xml解析器可能会解析失败。本函数针对这种情况做了特殊处理，使得解析的结果尽可能准确。
+
+本示例中：
+
+- `content`的值含有特殊字符串`]]>`，是CDATA的结束标记，使用一般的xml解析器将解析失败
+- `title`和`description`字段有岐义，有两种方式解析，函数会自动选择一种作为解析结果
+
+```js
+x2o(`<xml>
+  <type><![CDATA[custom]]></type>
+  <content><![CDATA[]]><[[]]></content>
+  <title><![CDATA[标题]]></title><description>]]></title>
+  <description><![CDATA[描述]]></description>
+</xml>`)
+```
+
+将返回如下对象：
+
+```js
+{
+  xml: {
+    type: 'custom',
+    content: ']]><[[',
+    title: '标题]]></title><description>',
+    description: '描述'
   }
 }
 ```

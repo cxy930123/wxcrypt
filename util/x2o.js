@@ -4,7 +4,7 @@ exports.__esModule = true;
  * 将xml字符串转化为对象
  */
 function x2o(xml) {
-    var root = xml.match(/<(\w+)>(<!\[CDATA\[)?([\s\S]*)(\]\]>)?<\/\1>/g);
+    var root = xml.match(/<(\w+)>(<!\[CDATA\[)?([\s\S]*?)(\]\]>)?<\/\1>/g);
     if (!root) {
         return xml
             .replace(/&lt;/g, '<')

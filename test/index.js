@@ -1,6 +1,6 @@
 require('should');
 const randomstring = require('randomstring');
-const { default: WXBizMsgCrypt } = require('..');
+const WXBizMsgCrypt = require('..');
 const { x2o } = require('../util');
 
 describe('#main', () => {

@@ -296,8 +296,8 @@ x2o(`<xml>
 x2o(`<xml>
   <type><![CDATA[custom]]></type>
   <content><![CDATA[]]><[[]]></content>
-  <title><![CDATA[标题]]></title><description>]]></title>
-  <description><![CDATA[描述]]></description>
+  <title><![CDATA[标题]]></title>
+  <description>]]></title><description><![CDATA[描述]]></description>
 </xml>`)
 ```
 
@@ -308,8 +308,8 @@ x2o(`<xml>
   xml: {
     type: 'custom',
     content: ']]><[[',
-    title: '标题]]></title><description>',
-    description: '描述'
+    title: '标题',
+    description: ']]></title><description><![CDATA[描述]]>'
   }
 }
 ```

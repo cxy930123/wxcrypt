@@ -2,7 +2,7 @@
  * 将xml字符串转化为对象
  */
 export default function x2o(xml: string): any {
-  const root = xml.match(/<(\w+)>(<!\[CDATA\[)?([\s\S]*)(\]\]>)?<\/\1>/g);
+  const root = xml.match(/<(\w+)>(<!\[CDATA\[)?([\s\S]*?)(\]\]>)?<\/\1>/g);
   if (!root) {
     return xml
       .replace(/&lt;/g, '<')

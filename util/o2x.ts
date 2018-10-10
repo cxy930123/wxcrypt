@@ -11,7 +11,7 @@ export default function o2x(obj: any): string {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/'/g, '&aops;')
+      .replace(/'/g, '&apos;')
       .replace(/"/g, '&quot;');
   }
   if (typeof obj === 'number') {
@@ -20,18 +20,8 @@ export default function o2x(obj: any): string {
   if (typeof obj !== 'object' || obj === null) {
     return '';
   }
-  const xml = [];
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      const value = obj[key];
-      if (Array.isArray(value)) {
-        for (const item of value) {
-          xml.push(`<${key}>${o2x(item)}</${key}>`);
-        }
-      } else {
-        xml.push(`<${key}>${o2x(value)}</${key}>`);
-      }
-    }
+  if (Array.isArray(obj)) {
+    return obj.map(item => `<item>${o2x(item)}</item>`).join('');
   }
-  return xml.join('');
+  return Object.keys(obj).map(key => `<${key}>${o2x(obj[key])}</${key}>`).join('');
 }

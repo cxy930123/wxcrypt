@@ -133,8 +133,9 @@ sign(...args: string[]): string;
 
 > __注意：__
 >
-> 1. 对象最外层应该只有一个key，但这不是强制性的
-> 2. 不支持嵌套数组
+> 1. 支持的基本类型有`string`和`number`，非法类型和`null`会被转成空字符串
+> 2. 最外层可以是对象、数组或基本类型
+> 3. 数组项会用`<item>`标签包起来
 
 #### 引入
 
@@ -151,24 +152,22 @@ o2x(obj: any): string
 
 #### 示例1：数组的处理
 
-数组将会展开为兄弟节点，但不允许嵌套的数组
+数组项将用`<item>`标签包裹，并成为兄弟节点
 
 ```js
 o2x({
   xml: {
     timestamp: 1536123965810,
-    articles: {
-      item: [
-        {
-          title: 'Article1',
-          desc: 'Description1'
-        },
-        {
-          title: 'Article2',
-          desc: 'Description2'
-        }
-      ]
-    }
+    articles: [
+      {
+        title: 'Article1',
+        desc: 'Description1'
+      },
+      {
+        title: 'Article2',
+        desc: 'Description2'
+      }
+    ]
   }
 })
 ```
@@ -204,7 +203,7 @@ o2x({
     // 没有特殊字符，不处理
     type: 'video',
     // 引号是特殊字符，使用CDATA处理
-    title: '"愤怒＂的小鸟',
+    title: '"愤怒"的小鸟',
     // 含有"]]>"，需要转义
     description: ']]><[['
   }
@@ -216,7 +215,7 @@ o2x({
 ```xml
 <xml>
   <type>video</type>
-  <title><![CDATA["愤怒＂的小鸟]]></title>
+  <title><![CDATA["愤怒"的小鸟]]></title>
   <description>]]&gt;&lt;[[</description>
 </xml>
 ```
@@ -228,8 +227,9 @@ o2x({
 > __注意：__
 >
 > 1. 虽然xml最外层应该只有一个根节点，但这不是强制的
-> 2. 如果有两个以上兄弟节点的标签名相同，则会被合并成一个数组
-> 3. 所有的文本节点都会转化为字符串（而不是数字或布尔类型）
+> 2. 除了`<item>`标签，兄弟节点的标签名不可以相同
+> 3. `<item>`标签代表数组项，不可以与其他标签成为兄弟节点
+> 4. 所有的文本节点都会转化为字符串（而不是数字或布尔类型）
 
 #### 引入
 
@@ -244,9 +244,9 @@ const { x2o } = require('wxcrypt'); // CommonJS
 x2o(xml: string): any
 ```
 
-#### 示例1：同名兄弟节点的处理
+#### 示例：`<item>`标签节点的处理
 
-包含同名的兄弟节点时，将转化为数组
+每个`<item>`标签节点将转成一个数组项，且支持嵌套
 
 ```js
 x2o(`<xml>
@@ -270,46 +270,13 @@ x2o(`<xml>
 {
   xml: {
     timestamp: '1536123965810',
-    articles: {
-      item: [{
-        title: 'Article1',
-        desc: 'Description1'
-      }, {
-        title: 'Article2',
-        desc: 'Description2'
-      }]
-    }
-  }
-}
-```
-
-#### 示例2：特殊字符的处理
-
-由于微信发来的xml字符串只都是用CDATA处理，而没有用转义处理，当遇到精心构造的消息时（如包含字符串`]]>`的消息），可能导致xml字符串不规范，甚至产生岐义。这种情况下，一般的xml解析器可能会解析失败。本函数针对这种情况做了特殊处理，使得解析的结果尽可能准确。
-
-本示例中：
-
-- `content`的值含有特殊字符串`]]>`，是CDATA的结束标记，使用一般的xml解析器将解析失败
-- `title`和`description`字段有岐义，有两种方式解析，函数会自动选择一种作为解析结果
-
-```js
-x2o(`<xml>
-  <type><![CDATA[custom]]></type>
-  <content><![CDATA[]]><[[]]></content>
-  <title><![CDATA[标题]]></title>
-  <description>]]></title><description><![CDATA[描述]]></description>
-</xml>`)
-```
-
-将返回如下对象：
-
-```js
-{
-  xml: {
-    type: 'custom',
-    content: ']]><[[',
-    title: '标题',
-    description: ']]></title><description><![CDATA[描述]]>'
+    articles: [{
+      title: 'Article1',
+      desc: 'Description1'
+    }, {
+      title: 'Article2',
+      desc: 'Description2'
+    }]
   }
 }
 ```

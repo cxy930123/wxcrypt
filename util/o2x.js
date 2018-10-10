@@ -13,7 +13,7 @@ function o2x(obj) {
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-            .replace(/'/g, '&aops;')
+            .replace(/'/g, '&apos;')
             .replace(/"/g, '&quot;');
     }
     if (typeof obj === 'number') {
@@ -22,21 +22,9 @@ function o2x(obj) {
     if (typeof obj !== 'object' || obj === null) {
         return '';
     }
-    var xml = [];
-    for (var key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            var value = obj[key];
-            if (Array.isArray(value)) {
-                for (var _i = 0, value_1 = value; _i < value_1.length; _i++) {
-                    var item = value_1[_i];
-                    xml.push("<" + key + ">" + o2x(item) + "</" + key + ">");
-                }
-            }
-            else {
-                xml.push("<" + key + ">" + o2x(value) + "</" + key + ">");
-            }
-        }
+    if (Array.isArray(obj)) {
+        return obj.map(function (item) { return "<item>" + o2x(item) + "</item>"; }).join('');
     }
-    return xml.join('');
+    return Object.keys(obj).map(function (key) { return "<" + key + ">" + o2x(obj[key]) + "</" + key + ">"; }).join('');
 }
 exports["default"] = o2x;

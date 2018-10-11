@@ -1,4 +1,4 @@
-import Builder from './x2o/builder';
+import Builder from './x2o-builder';
 
 /**
  * 将xml字符串转化为对象

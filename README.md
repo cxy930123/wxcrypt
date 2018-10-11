@@ -97,6 +97,28 @@ decryptMsg(msgSignature, timestamp, nonce, postData)
 encryptMsg(replyMsg, timestamp, nonce)
 ```
 
+### 错误处理
+
+调用方法时，如有错误，则会在错误对象上加上两个参数：
+
+- `errcode` 数字类型的错误码
+- `errmsg` 错误描述
+
+目前支持的错误码如下：
+
+| 错误码 | 错误描述 |
+| ----- | ------- |
+| -40001 | 签名验证错误 |
+| -40002 | xml解析失败 |
+| -40003 | sha加密生成签名失败 |
+| -40004 | AESKey 非法 |
+| -40005 | appid/corpid 校验错误 |
+| -40006 | AES 加密失败 |
+| -40007 | AES 解密失败 |
+| -400011 | 生成xml失败 |
+
+---
+
 > __相关链接__：
 > 
 > 1. 微信公众平台技术文档[《消息加解密接入指引》](https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419318479&token=&lang=zh_CN)

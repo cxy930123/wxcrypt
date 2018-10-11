@@ -1,8 +1,5 @@
-import { sign, x2o, o2x } from './util';
+import { sign, x2o, o2x, tryThrow } from './util';
 import { createDecipheriv, pseudoRandomBytes, createCipheriv } from 'crypto';
-
-const ERROR_SIGNATURE_DISMATCH = new Error('Signature dismatch.');
-const ERROR_APPID_OR_CROPID_DISMATCH = new Error('AppID or CropID dismatch.');
 
 class WXBizMsgCrypt {
   static readonly sign = sign;
@@ -42,15 +39,18 @@ class WXBizMsgCrypt {
   ) {
     // 校验消息体签名
     if (msgSignature !== sign(this.token, timestamp, nonce, msgEncrypt)) {
-      throw ERROR_SIGNATURE_DISMATCH;
+      tryThrow(-40001, '签名验证错误');
     }
 
     // AES解密
-    const decipher = createDecipheriv('aes-256-cbc', this.aesKey, this.iv).setAutoPadding(false);
-    let buffer = Buffer.concat([
-      decipher.update(msgEncrypt, 'base64'),
-      decipher.final()
-    ]);
+    const decipher = tryThrow(-40004, 'AESKey 非法', () => createDecipheriv('aes-256-cbc', this.aesKey, this.iv).setAutoPadding(false));
+    let buffer = tryThrow(
+      -40007, 'AES 解密失败',
+      () => Buffer.concat([
+        decipher.update(msgEncrypt, 'base64'),
+        decipher.final()
+      ])
+    );
 
     // 去除开头的随机字符串[16字节]
     buffer = buffer.slice(16);
@@ -72,7 +72,7 @@ class WXBizMsgCrypt {
     // 校验AppID（CropID）
     const appid = buffer.toString();
     if (appid !== this.appid) {
-      throw ERROR_APPID_OR_CROPID_DISMATCH;
+      tryThrow(-40005, 'appid/corpid 校验错误');
     }
 
     return msgDecrypt;
@@ -113,7 +113,7 @@ class WXBizMsgCrypt {
       msgSignature,
       timestamp,
       nonce,
-      x2o(postData).xml.Encrypt
+      tryThrow(-40002, 'xml解析失败', () => x2o(postData).xml.Encrypt)
     );
   }
 
@@ -157,26 +157,32 @@ class WXBizMsgCrypt {
     const padding = Buffer.alloc(padLen, padLen);
 
     // AES加密
-    const cipher = createCipheriv('aes-256-cbc', this.aesKey, this.iv).setAutoPadding(false);
-    const msgEncrypt = Buffer.concat([
-      cipher.update(random16),
-      cipher.update(msgLen),
-      cipher.update(msgDecrypt),
-      cipher.update(appid),
-      cipher.update(padding),
-      cipher.final()
-    ]).toString('base64');
+    const cipher = tryThrow(-40004, 'AESKey 非法', () => createCipheriv('aes-256-cbc', this.aesKey, this.iv).setAutoPadding(false));
+    const msgEncrypt = tryThrow(
+      -40006, 'AES 加密失败',
+      () => Buffer.concat([
+        cipher.update(random16),
+        cipher.update(msgLen),
+        cipher.update(msgDecrypt),
+        cipher.update(appid),
+        cipher.update(padding),
+        cipher.final()
+      ]).toString('base64')
+    );
 
     // 生成消息密文
-    const msgSignature = sign(this.token, timestamp, nonce, msgEncrypt);
-    return o2x({
-      xml: {
-        Encrypt: msgEncrypt,
-        MsgSignature: msgSignature,
-        TimeStamp: timestamp,
-        Nonce: nonce
-      }
-    });
+    const msgSignature = tryThrow(-40003, 'sha加密生成签名失败', () => sign(this.token, timestamp, nonce, msgEncrypt));
+    return tryThrow(
+      -40011, '生成xml失败',
+      () => o2x({
+        xml: {
+          Encrypt: msgEncrypt,
+          MsgSignature: msgSignature,
+          TimeStamp: timestamp,
+          Nonce: nonce
+        }
+      })
+    );
   }
 }
 

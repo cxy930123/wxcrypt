@@ -1,6 +1,24 @@
-# wxcrypt(WXBizMsgCrypt)
+# wxcrypt
 
-微信公众号和企业号接收消息和事件时用于加解密的类（NodeJS版本）。
+微信公众号和企业号接收消息和事件时用于加解密的类，即官方的WXBizMsgCrypt类。（NodeJS版本）
+
+## 目录
+
+- [安装](#安装)
+- [引入](#引入)
+  - [ES6](#es6)
+  - [Typescript](#typescript)
+  - [NodeJS](#nodejs)
+- [使用](#使用)
+  - [初始化加解密类](#初始化加解密类)
+  - [验证URL函数](#验证URL函数)
+  - [解密函数](#解密函数)
+  - [加密函数](#加密函数)
+  - [错误处理](#错误处理)
+- [辅助函数](#辅助函数)
+  - [签名函数-`sign`](#签名函数-sign)
+  - [对象转XML字符串-`o2x`](#对象转XML字符串-o2x)
+  - [XML字符串转对象-`x2o`](#XML字符串转对象-x2o)
 
 ## 安装
 
@@ -41,7 +59,9 @@ const WXBizMsgCrypt = require('wxcrypt');
 new WXBizMsgCrypt(token, encodingAESKey, appid);
 ```
 
-### 验证URL函数（仅企业微信）
+### 验证URL函数
+
+> __注意：本方法仅企业微信可用__
 
 本函数实现：
 
@@ -99,7 +119,7 @@ encryptMsg(replyMsg, timestamp, nonce)
 
 ### 错误处理
 
-调用方法时，如有错误，则会在错误对象上加上两个参数：
+调用方法时，如有错误，则会在错误对象上加上两个属性：
 
 - `errcode` 数字类型的错误码
 - `errmsg` 错误描述
@@ -128,7 +148,7 @@ encryptMsg(replyMsg, timestamp, nonce)
 
 除了对WXBizMsgCrypt的实现，本项目还提供几个辅助函数。
 
-### 签名函数`sign`
+### 签名函数-`sign`
 
 传入若干个字符串，用于生成签名。可用于公众号url签名校验。具体算法为：
 
@@ -149,7 +169,7 @@ const { sign } = require('wxcrypt'); // CommonJS
 sign(...args: string[]): string;
 ```
 
-### 对象转XML字符串`o2x`
+### 对象转XML字符串-`o2x`
 
 传入任意对象，生成xml字符串。
 
@@ -242,7 +262,7 @@ o2x({
 </xml>
 ```
 
-### XML字符串转对象`x2o`
+### XML字符串转对象-`x2o`
 
 传入xml字符串，生成js对象
 

@@ -8,10 +8,6 @@ describe('#xml2obj', () => {
       should(x2o(text)).eql(text);
     })
 
-    it('#empty string should return null', () => {
-      should(x2o('')).eql(null);
-    })
-
     it('#string with "&" should throw error', () => {
       should(() => x2o('string with "&"')).throwError();
     })
@@ -38,6 +34,29 @@ describe('#xml2obj', () => {
 
     it('#known entity should throw error', () => {
       should(() => x2o('&entity;')).throwError();
+    })
+  })
+
+  describe('#parse empty node', () => {
+    it('#empty string should become null', () => {
+      should(x2o('')).eql(null);
+    })
+
+    it('#the value of empty node should be null', () => {
+      should(x2o('<xml></xml>')).eql({ xml: null });
+    })
+
+    it('#the value of node noly contains whitespace should be text', () => {
+      should(x2o('<xml> </xml>')).eql({ xml: ' ' });
+      should(x2o('<xml>  </xml>')).eql({ xml: '  ' });
+      should(x2o('<xml>\n</xml>')).eql({ xml: '\n' });
+      should(x2o('<xml>\r</xml>')).eql({ xml: '\r' });
+      should(x2o('<xml>\t</xml>')).eql({ xml: '\t' });
+      should(x2o('<xml><![CDATA[ ]]></xml>')).eql({ xml: ' ' });
+    })
+
+    it('#the value of empty cdata node should become empty string', () => {
+      should(x2o('<xml><![CDATA[]]></xml>')).eql({ xml: '' });
     })
   })
 
@@ -94,6 +113,9 @@ describe('#xml2obj', () => {
       should(() => x2o('<a>')).throwError();
       should(() => x2o('</a>')).throwError();
       should(() => x2o('<a><b></a></b>')).throwError();
+      should(() => x2o('<a><![CDATA[')).throwError();
+      should(() => x2o('<a><![CDATA[]]>')).throwError();
+      should(() => x2o('<a><![CDATA[ ]]>')).throwError();
     })
   })
 })

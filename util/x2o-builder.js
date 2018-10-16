@@ -6,23 +6,30 @@ var Builder = /** @class */ (function () {
         this.names = [];
         this.values = [];
         this.value = null;
-        // 非转义普通文本|开始标签|结束标签|CDATA内容|缺少CDATA结束标记|非法字符<|转义字符|非法字符&|非法字符串]]>|剩余普通文本
+        // 非转义普通文本|开始标签|结束标签|CDATA内容|缺少CDATA结束标记|非法字符(<)|转义字符|非法字符(&)|非法字符串(]]>)|剩余普通文本
         var regex = /([^]*?)(?:<(?:(\w+)>|\/(\w+)>|!\[CDATA\[(?:([^]*?)\]\]>|())|())|&(?:(\w+);|())|(\]\]\>))|([^]+)$/g;
         var match;
         while (match = regex.exec(xml)) {
-            if (typeof match[1] !== 'undefined')
+            // 非转义普通文本
+            if (match[1])
                 this.text(match[1]);
-            if (typeof match[2] !== 'undefined')
+            // 开始标签
+            if (match[2])
                 this.start(match[2]);
-            if (typeof match[3] !== 'undefined')
+            // 结束标签
+            if (match[3])
                 this.end(match[3]);
+            // CDATA内容
             if (typeof match[4] !== 'undefined')
                 this.text(match[4]);
+            // 缺少CDATA结束标记
             if (typeof match[5] !== 'undefined')
                 throw new Error('缺少CDATA结束标记');
+            // 非法字符(<)
             if (typeof match[6] !== 'undefined')
                 throw new Error('非法字符：<');
-            if (typeof match[7] !== 'undefined') {
+            // 转义字符
+            if (match[7]) {
                 switch (match[7]) {
                     case 'amp':
                         this.text('&');
@@ -43,11 +50,14 @@ var Builder = /** @class */ (function () {
                         throw new Error("\u672A\u77E5\u7684\u5B9E\u4F53\u540D\u79F0\uFF1A" + match[7]);
                 }
             }
+            // 非法字符(&)
             if (typeof match[8] !== 'undefined')
                 throw new Error('字符“&”只能用于构成转义字符');
+            // 非法字符串(]]>)
             if (typeof match[9] !== 'undefined')
                 throw new Error('字符序列“]]>”不能出现在内容中');
-            if (typeof match[10] !== 'undefined')
+            // 剩余普通文本
+            if (match[10])
                 this.text(match[10]);
         }
     }
@@ -78,8 +88,6 @@ var Builder = /** @class */ (function () {
         this.value = null;
     };
     Builder.prototype.text = function (content) {
-        if (!content)
-            return;
         this.value = this.value || '';
         if (typeof this.value !== 'string') {
             if (content.trim()) {

@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 尝试执行函数，并返回执行结果
  * @param errcode 失败时的错误码
@@ -15,4 +15,4 @@ function default_1(errcode, errmsg, fn) {
         throw Object.assign(err, { errcode: errcode, errmsg: errmsg });
     }
 }
-exports["default"] = default_1;
+exports.default = default_1;

@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 将对象转化为xml字符串
  */
@@ -27,4 +27,4 @@ function o2x(obj) {
     }
     return Object.keys(obj).map(function (key) { return "<" + key + ">" + o2x(obj[key]) + "</" + key + ">"; }).join('');
 }
-exports["default"] = o2x;
+exports.default = o2x;

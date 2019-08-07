@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var Builder = /** @class */ (function () {
     function Builder(xml) {
         if (xml === void 0) { xml = ''; }
@@ -119,4 +119,4 @@ var Builder = /** @class */ (function () {
     };
     return Builder;
 }());
-exports["default"] = Builder;
+exports.default = Builder;

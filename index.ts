@@ -186,6 +186,4 @@ class WXBizMsgCrypt {
   }
 }
 
-namespace WXBizMsgCrypt { }
-
 export = WXBizMsgCrypt;

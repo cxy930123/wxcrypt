@@ -49,5 +49,4 @@ declare class WXBizMsgCrypt {
      */
     encryptMsg(replyMsg: string, timestamp: string, nonce: string): string;
 }
-declare namespace WXBizMsgCrypt { }
 export = WXBizMsgCrypt;
